@@ -1,0 +1,29 @@
+name: Trigger Vercel Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'frontend/**'
+      - 'vercel.json'
+      - '.github/workflows/vercel-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Deploy Hook secret
+        run: |
+          if [ -z "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" ]; then
+            echo "Repository secret VERCEL_DEPLOY_HOOK_URL is missing." >&2
+            exit 1
+          fi
+      - name: Trigger Vercel deploy via Deploy Hook
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Calling Vercel Deploy Hook..."
+          curl -fsSL -X POST "$HOOK"
+          echo "Deploy triggered. Check Vercel dashboard for progress."
+
