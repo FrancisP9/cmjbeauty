@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { ContactForm } from "../components/ContactForm";
 import { trackBookingClick } from "../api/client";
+import CookieConsent from "../components/CookieConsent";
 import {
   Dialog,
   DialogContent,
@@ -41,7 +42,7 @@ const Header = () => (
         <a className="navigation-link" href="#apropos">
           À propos
         </a>
-        <a className="navigation-link" href="#prestations">
+        <a className="navigation-link" href="#services">
           Prestations
         </a>
         <a className="navigation-link" href="#reserver">
@@ -70,44 +71,25 @@ const Header = () => (
 const Hero = () => {
   const { hero, brand, contact } = siteData;
   return (
-    <section id="top" className="section relative overflow-hidden">
-      <div className="absolute inset-0 -z-10" aria-hidden="true">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url(/images/hero-bg.jpg)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        <div className="absolute inset-0 bg-black/60" />
-      </div>
+    <section id="top" className="section bg-[color:var(--bg-secondary)]">
       <div className="container-aesop grid-two hero-collage">
-        <div className="space-y-6 bg-black/35 backdrop-blur-sm rounded-md p-4 md:p-6">
-          <span
-            className="gold-pill text-white uppercase"
-            style={{ color: "#ffffff" }}
-          >
-            BRUXELLES CENTRE
-          </span>
+        <div className="space-y-2 md:space-y-6 text-center md:text-left">
+          <span className="gold-pill uppercase">BRUXELLES CENTRE</span>
           <h1
             id="hero-title"
-            className="text-4xl md:text-5xl leading-tight text-white force-white"
+            className="text-2xl md:text-5xl leading-tight text-black"
             style={{
               fontFamily: "Playfair Display",
-              textShadow: "0 2px 8px rgba(0,0,0,.6)",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             {hero.title}
           </h1>
-          <p
-            className="text-lg md:text-xl text-[color:var(--accent-gold)]"
-            style={{ textShadow: "0 1px 4px rgba(0,0,0,.6)" }}
-          >
+          {/* Sous-titre placé au centre entre le pill et les CTAs */}
+          <p className="text-base md:text-xl text-[color:var(--accent-gold)] mt-2 mb-6">
             {hero.subtitle}
           </p>
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4 justify-center md:justify-start">
             <Button
               onClick={() => {
                 trackBookingClick({
@@ -116,30 +98,25 @@ const Hero = () => {
                 });
                 window.open(siteData.booking.fresha, "_blank");
               }}
-              className="rounded-none btn-rect border border-white text-white bg-transparent hover:bg-white hover:text-black"
-              style={{ color: "#ffffff", borderColor: "#ffffff" }}
+              className="rounded-none btn-rect btn-rect--gold w-full sm:w-auto"
             >
               Réserver maintenant
             </Button>
             <a
-              href="#prestations"
-              className="btn-ghost text-white"
-              style={{ color: "#ffffff" }}
+              href="#services"
+              className="btn-ghost w-full sm:w-auto text-center"
             >
               Voir les prestations
             </a>
           </div>
-          <p
-            className="meta pt-2 text-white"
-            style={{ textShadow: "0 1px 3px rgba(0,0,0,.6)" }}
-          >
+          <p className="meta pt-2 mx-auto md:mx-0">
             {brand.name} — {brand.city} |{" "}
             {"Soins esthétiques personnalisés, ambiance sereine."} |{" "}
             {brand.address} | {contact.hours_short}
           </p>
         </div>
-        <div className="relative">
-          <div className="photo-card" style={{ height: "420px" }}>
+        <div className="relative max-w-md mx-auto md:mx-0">
+          <div className="photo-card" style={{ height: "360px" }}>
             <img
               src={hero.collageMain}
               alt="Vue intérieure CMJ"
@@ -262,13 +239,110 @@ const AboutSection = () => {
 const accentGold = "#c9a56a";
 const ServiceCard = ({ s, onBook }) => {
   const [flipped, setFlipped] = React.useState(false);
+
+  // Tarifs détaillés selon le service
   const tariffs = React.useMemo(() => {
-    const tokens = (s.id || "").split("-").filter(Boolean);
-    const matched =
-      siteData.treatwellServices?.filter((g) =>
-        tokens.some((t) => g.id?.includes(t))
-      ) || [];
-    return matched.flatMap((g) => g.items || []);
+    const tariffsMap = {
+      "epilation-electrolyse": [
+        { name: "5 min", price: "25 €" },
+        { name: "10 min", price: "34 €" },
+        { name: "15 min", price: "42 €" },
+        { name: "30 min", price: "67 €" },
+        { name: "45 min", price: "95 €" },
+        { name: "1 h", price: "126 €" },
+      ],
+      "laser-diode": [
+        { name: "Orteils", price: "18 €" },
+        { name: "Intersourcil", price: "27 €" },
+        { name: "Mains", price: "27 €" },
+        { name: "Aiselles", price: "63 €" },
+        { name: "Bikini simple", price: "63 €" },
+        { name: "Bikini Brésilien", price: "90 €" },
+        { name: "1/2 jambes", price: "126 €" },
+        { name: "Jambes entières", price: "252 €" },
+        { name: "Corps entier", price: "720 €" },
+      ],
+      "laser-ipl": [
+        { name: "Orteils", price: "18 €" },
+        { name: "Intersourcil", price: "27 €" },
+        { name: "Mains", price: "27 €" },
+        { name: "Aiselles", price: "63 €" },
+        { name: "Bikini simple", price: "63 €" },
+        { name: "Bikini Brésilien", price: "90 €" },
+        { name: "1/2 jambes", price: "126 €" },
+        { name: "Jambes entières", price: "252 €" },
+        { name: "Corps entier", price: "900 €" },
+      ],
+      "cire-lycon": [
+        { name: "Aisselles", price: "10 €" },
+        { name: "Maillot simple", price: "15 €" },
+        { name: "Maillot brésilien", price: "20 €" },
+        { name: "1/2 jambes", price: "25 €" },
+        { name: "Jambes entières", price: "35 €" },
+        { name: "Forfait complet", price: "50 €" },
+      ],
+      "cire-classique": [
+        { name: "Aisselles", price: "13 €" },
+        { name: "Maillot simple", price: "18 €" },
+        { name: "Maillot brésilien", price: "25 €" },
+        { name: "1/2 jambes", price: "30 €" },
+        { name: "Jambes entières", price: "40 €" },
+        { name: "Forfait complet", price: "50 €" },
+      ],
+      "cire-forfait-femmes": [
+        { name: "Aisselles", price: "13 €" },
+        { name: "Maillot simple", price: "18 €" },
+        { name: "Maillot brésilien", price: "25 €" },
+        { name: "1/2 jambes", price: "30 €" },
+        { name: "Jambes entières", price: "40 €" },
+        { name: "Forfait complet", price: "50 €" },
+      ],
+      "cire-forfait-hommes": [
+        { name: "Aisselles", price: "20 €" },
+        { name: "Torse", price: "30 €" },
+        { name: "Dos", price: "35 €" },
+        { name: "Bras", price: "25 €" },
+        { name: "Jambes", price: "40 €" },
+        { name: "Forfait complet", price: "50 €" },
+      ],
+      "soins-visage": [
+        { name: "Soin express", price: "30 €" },
+        { name: "Soin classique", price: "45 €" },
+        { name: "Soin spécifique", price: "55 €" },
+        { name: "Soin premium", price: "75 €" },
+        { name: "Soin anti-âge", price: "103,50 €" },
+      ],
+      "peelings-visage": [
+        { name: "Peeling doux", price: "30 €" },
+        { name: "Peeling moyen", price: "45 €" },
+        { name: "Peeling profond", price: "65 €" },
+        { name: "Peeling premium", price: "85 €" },
+        { name: "Peeling anti-âge", price: "103,50 €" },
+      ],
+      "micro-needling": [
+        { name: "Zone ciblée", price: "30 €" },
+        { name: "Visage complet", price: "55 €" },
+        { name: "Visage + cou", price: "75 €" },
+        { name: "Visage + décolleté", price: "85 €" },
+        { name: "Visage complet premium", price: "103,50 €" },
+      ],
+      "therapie-led": [
+        { name: "Séance LED", price: "30 €" },
+        { name: "LED + soin", price: "45 €" },
+        { name: "LED premium", price: "65 €" },
+        { name: "LED anti-âge", price: "85 €" },
+        { name: "LED + thérapie", price: "103,50 €" },
+      ],
+      massages: [
+        { name: "30 min", price: "35 €" },
+        { name: "45 min", price: "50 €" },
+        { name: "1 h", price: "75 €" },
+        { name: "1 h 15", price: "95 €" },
+        { name: "1 h 30", price: "117 €" },
+      ],
+    };
+
+    return tariffsMap[s.id] || [];
   }, [s.id]);
 
   const fallbackById = React.useMemo(
@@ -277,7 +351,7 @@ const ServiceCard = ({ s, onBook }) => {
       "laser-hommes": "/images/photo-1700760934166-4c766d708139.jpg",
       "soin-visage-led": "/images/IMG_0109.jpg",
       "massage-corps-crane": "/images/IMG_0103.jpg",
-      "cire-maillot": "/images/IMG_0111.jpg",
+      "cire-maillot": "/images/cire.jpg",
     }),
     []
   );
@@ -518,14 +592,11 @@ const Services = () => {
   return (
     <section
       id="services"
-      className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16"
+      className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 bg-[color:var(--bg-secondary)]"
     >
       <div className="max-w-2xl">
-        <h2
-          className="text-3xl font-semibold"
-          style={{ fontFamily: "Playfair Display, serif" }}
-        >
-          Nos services
+        <h2 className="text-3xl" style={{ fontFamily: "Playfair Display" }}>
+          <span className="cmj">Nos services</span>
         </h2>
         <p className="mt-2 text-[color:var(--text-secondary)]">
           Des soins fondés sur la science, pensés pour votre confort et des
@@ -675,6 +746,7 @@ const Footer = () => (
 export default function Landing() {
   return (
     <div>
+      <CookieConsent />
       <Header />
       <Hero />
       <GalleryStrip />

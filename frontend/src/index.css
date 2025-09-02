@@ -16,6 +16,10 @@
   --accent-gold: #c9a56a;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body,
 #root {
@@ -287,10 +291,6 @@ h4 {
 
 /* Helpers */
 .force-white {
-  color: #ffffff !important;
-}
-/* Titre du héros uniquement */
-#hero-title {
   color: #ffffff !important;
 }
 

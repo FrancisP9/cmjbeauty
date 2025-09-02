@@ -48,6 +48,17 @@
     </script>
 
     <script>
+      // Initialise PostHog uniquement si consentement analytics
+      window.__initPosthog = function () {
+        try {
+          posthog.init("phc_yJW1VjHGGwmCbbrtczfqqNxgBDbhlhOWcdzcIJEOTFE", {
+            api_host: "https://us.i.posthog.com",
+            person_profiles: "identified_only",
+          });
+        } catch (_) {}
+      };
+    </script>
+    <script>
       !(function (t, e) {
         var o, n, p, r;
         e.__SV ||
@@ -97,10 +108,7 @@
           }),
           (e.__SV = 1));
       })(document, window.posthog || []);
-      posthog.init("phc_yJW1VjHGGwmCbbrtczfqqNxgBDbhlhOWcdzcIJEOTFE", {
-        api_host: "https://us.i.posthog.com",
-        person_profiles: "identified_only",
-      });
+      // Ne pas initialiser automatiquement: respect consentement
     </script>
   </body>
 </html>
