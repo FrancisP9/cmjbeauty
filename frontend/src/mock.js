@@ -51,7 +51,7 @@ export const siteData = {
       desc: "Épilation définitive par électrolyse, thermolyse et technique blend. Poils résiduels/blonds/roux. Petites zones (lèvre, menton, sourcils).",
       duration: "5 min - 1 h",
       price: "25 € - 126 €",
-      image: "/images/electrolyse.jpg?v=2",
+      image: "/images/electrolyse.jpg?v=3",
       benefits: ["Définitif", "Précis", "Toutes couleurs"],
     },
     {
