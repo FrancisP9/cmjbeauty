@@ -1,0 +1,42 @@
+name: Vercel Deploy (CLI)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'frontend/**'
+      - 'vercel.json'
+      - '.github/workflows/vercel-cli-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Validate secrets
+        run: |
+          for v in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -z "${!v}" ]; then
+              echo "Missing required secret: $v" >&2
+              exit 1
+            fi
+          done
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+      - name: Build Project
+        run: vercel build --prod --token "$VERCEL_TOKEN"
+      - name: Deploy to Production
+        run: vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN"
+
